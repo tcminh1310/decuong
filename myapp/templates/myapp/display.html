@@ -1,0 +1,16 @@
+{%extends 'myapp/base.html' %}
+{%block content%}
+        <h1>Thông tin bệnh nhân</h1>
+        <p>Mã y tế: {{patient.identifier}}</p>
+        <p>Họ và tên: {{patient.name}}</p>
+        <p>Giới tính: {{patient.gender}}</p>
+        <p>Ngày sinh: {{patient.birthDate}}</p>
+        {%for addr in patient.address %}
+            {%if addr.use == 'home'%}
+                <p>Địa chỉ: {{addr.address}}</p>
+            {%elif addr.use == 'work'%}
+                <p>Nơi làm việc: {{addr.address}}</p>
+            {%endif%}
+        {%endfor%}
+
+{%endblock%}}

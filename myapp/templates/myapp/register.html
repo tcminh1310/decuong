@@ -1,0 +1,26 @@
+{%extends 'myapp/base.html'%}
+{%block content%}
+    <h1>Enter Patient information</h1>
+    <form action="{% url 'myapp:register' %}" method="POST">  
+        {% csrf_token %}   
+        <label for="ho_ten">Họ và tên</label>
+        <input type="text" name="ho_ten" id="ho_ten" placeholder="Nhập vào họ và tên bệnh nhân">
+        <br>
+        <input type="radio" name="gioi_tinh" value="Nam" id="nam">
+        <label for="nam">Nam</label>
+        <br>
+        <input type="radio" name="gioi_tinh" value="Nữ" id='nu'>
+        <label for="nu">Nữ</label>
+        <br>
+        <label for="ngay_sinh">Ngày sinh</label>
+        <input type="date" name="ngay_sinh" id="ngay_sinh">
+        <br>
+        <label for="dia_chi">Địa chỉ</label>
+        <input type="text" name="dia_chi" id="dia_chi" placeholder="Số nhà; Thôn, phố; Xã, phường; Huyện (Q, Tx); Tỉnh, thành phố">
+        <br>
+        <label for="noi_lam_viec">Nơi làm việc</label>
+        <input type="text" name="noi_lam_viec" id="noi_lam_viec" placeholder="Số nhà; Thôn, phố; Xã, phường; Huyện (Q, Tx); Tỉnh, thành phố">
+        <br>
+        <input type="submit" value="Submit">
+    </form>
+{%endblock%}

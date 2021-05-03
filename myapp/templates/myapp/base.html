@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Quản Lý</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body>
+    <div class="header" style="display:flex">
+        <img src="download.png" alt="logo" style="display: inline-flex;">
+        <h1 style="display: inline-flex;">Bệnh Viện Thống Nhất</h1>
+    </div>
+    <div style="display: flex;">
+        <div class="col1" style="display: flex; flex-direction: column;">
+            <a href="{% url 'myapp:register' %}">Đăng ký Hồ sơ</a>
+            <a href="{% url 'myapp:upload'%}">Upload Hồ sơ</a>
+        </div>
+        <div class="col2">
+            <form action="{%url 'myapp:search'%}" method="POST">
+                {% csrf_token %}
+                <label for="identifier">Tìm kiếm hồ sơ</label>
+                <input type="text" name="identifier" id="identifier" placeholder="Nhập vào Mã Y tế">
+                <button type="submit"><i class="fa fa-search"></i></button>
+            </form>
+        </div>
+    </div>
+    {%block content%}
+    {%endblock%}
+</body>
+</html>

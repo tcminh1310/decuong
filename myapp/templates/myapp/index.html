@@ -1,0 +1,8 @@
+{% extends 'myapp/base.html' %}
+{%block content%}
+{%if message%}
+<script>
+    alert('{{message}}');
+</script>
+{%endif%}
+{%endblock%}

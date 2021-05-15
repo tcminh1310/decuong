@@ -1,0 +1,10 @@
+{%extends 'myapp/base.html' %}
+{%block content%}
+{%if data %}
+    <h1>Lần thăm khám lúc {{data.Encounter.start_date}}</h1>
+    <h3>Kết quả khám bệnh</h3>
+    {%for observation in data.Observation%}
+        <p>{{observation.display}}: {{observation.value}}</p>
+    {%endfor%}
+{%endif%}
+{%endblock%}

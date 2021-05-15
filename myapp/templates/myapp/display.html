@@ -1,16 +1,22 @@
 {%extends 'myapp/base.html' %}
 {%block content%}
         <h1>Thông tin bệnh nhân</h1>
-        <p>Mã y tế: {{patient.identifier}}</p>
-        <p>Họ và tên: {{patient.name}}</p>
-        <p>Giới tính: {{patient.gender}}</p>
-        <p>Ngày sinh: {{patient.birthDate}}</p>
-        {%for addr in patient.address %}
+        <p>Mã y tế: {{data.Patient.identifier}}</p>
+        <p>Họ và tên: {{data.Patient.name}}</p>
+        <p>Giới tính: {{data.Patient.gender}}</p>
+        <p>Ngày sinh: {{data.Patient.birthDate}}</p>
+        {%for addr in data.Patient.address %}
             {%if addr.use == 'home'%}
                 <p>Địa chỉ: {{addr.address}}</p>
             {%elif addr.use == 'work'%}
                 <p>Nơi làm việc: {{addr.address}}</p>
             {%endif%}
         {%endfor%}
+        {%if data.Encounter%}
+            {%for encounter in data.Encounter%}
+                <a href="{% url 'myapp:observation' encounter.id %}">Lần thăm khám ngày {{encounter.start_date}}</a>
+                <br>
+            {%endfor%}
+        {%endif%}
 
 {%endblock%}}

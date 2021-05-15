@@ -7,6 +7,7 @@ import uuid
 from . import dttype as dt
 import requests
 # Create your views here.
+ns = {'d':"http://hl7.org/fhir"}
 class index(View):
     def get(self, request):
         return render(request, 'myapp/index.html')
@@ -114,7 +115,6 @@ class upload(View):
             if get_req.status_code == 200 and 'entry' in get_req.content.decode('utf-8'):
                 print(get_req.status_code)
                 get_root = ET.fromstring(get_req.content.decode('utf-8'))
-                ns = {'d':"http://hl7.org/fhir"}
                 entry = get_root.find('d:entry', ns)
                 resource = entry.find('d:resource', ns)
                 patient_resource = resource.find('d:Patient', ns)
@@ -134,7 +134,6 @@ class upload(View):
                 post_req = requests.post("http://hapi.fhir.org/baseR4/Patient/", headers={'Content-type': 'application/xml'}, data=text.decode('utf-8'))
                 if post_req.status_code == 201:
                     get_root = ET.fromstring(get_req.content.decode('utf-8'))
-                    ns = {'d':"http://hl7.org/fhir"}
                     id_resource = get_root.find('d:id', ns)
                     patient_id = id_resource.attrib['value']                         
             # print(x.status_code)
@@ -178,7 +177,6 @@ class upload(View):
                     # print(post_req.status_code)
                     if post_req.status_code == 201:
                         get_root = ET.fromstring(post_req.content.decode('utf-8'))
-                        ns = {'d':"http://hl7.org/fhir"}
                         id_resource = get_root.find('d:id', ns)
                         encounter_id = id_resource.attrib['value']  
                         print(encounter_id)
@@ -253,7 +251,35 @@ class search(View):
         if request.POST:
             x = requests.get("http://hapi.fhir.org/baseR4/Patient?identifier=urn:trinhcongminh|" + request.POST['identifier'], headers={'Content-type': 'application/xml'})
             if x.status_code == 200 and 'entry' in x.content.decode('utf-8'):
-                return render(request, 'myapp/index.html', {'message': 'Patient data existed'})
+                data={'Patient':{}, 'Encounter':{}}
+                get_root = ET.fromstring(x.content.decode('utf-8'))
+                entry = get_root.find('d:entry', ns)
+                resource = entry.find('d:resource', ns)
+                patient_resource = resource.find('d:Patient', ns)
+                data['Patient']['identifier'] = request.POST['identifier']
+                name_resource = patient_resource.find('d:name', ns)
+                data['Patient']['name'] = name_resource.find('d:family', ns).attrib['value'] +' '+ name_resource.find('d:given', ns).attrib['value']
+                if patient_resource.find('d:gender', ns).attrib['value'] == 'male':
+                    data['Patient']['gender'] = 'Nam'
+                elif patient_resource.find('d:gender', ns).attrib['value'] == 'female':
+                    data['Patient']['gender'] = 'Nữ'
+                data['Patient']['birthDate'] = patient_resource.find('d:birthDate', ns).attrib['value']
+                data['Patient']['address'] = []
+                for address in patient_resource.findall('d:address', ns):
+                    data['Patient']['address'].append({'use':address.find('d:use', ns).attrib['value'], 'address':address.find('d:line', ns).attrib['value']+','+address.find('d:district', ns).attrib['value']+','+address.find('d:city', ns).attrib['value']})
+                get_encounter = requests.get("http://hapi.fhir.org/baseR4/Encounter?subject.identifier=urn:trinhcongminh|" + request.POST['identifier'], headers={'Content-type': 'application/xml'})
+                if get_encounter.status_code == 200 and 'entry' in get_encounter.content.decode('utf-8'):
+                    get_root = ET.fromstring(get_encounter.content.decode('utf-8'))
+                    data['Encounter']=[]
+                    for entry in get_root.findall('d:entry', ns):
+                        resource = entry.find('d:resource', ns)
+                        encounter_resource = resource.find('d:Encounter', ns)
+                        encounter_id = encounter_resource.find('d:id', ns).attrib['value']
+                        period = encounter_resource.find('d:period', ns)
+                        start_date = period.find('d:start', ns).attrib['value']
+                        data['Encounter'].append({'id': encounter_id, 'start_date': start_date})
+                        print(encounter_id)
+                return render(request, 'myapp/display.html', {'message': 'Upload successful','data': data})
             else: 
                 return render(request, 'myapp/index.html', {'message': 'Patient not found in database'})
         else:
@@ -306,4 +332,35 @@ class register(View):
             x = requests.post("http://hapi.fhir.org/baseR4/Patient/", headers={'Content-type': 'application/xml'}, data=text.decode('utf-8'))
             return render(request, 'myapp/display.html', {'patient':patient})
         else: return HttpResponse("Please enter your information")
+
+class get_observation(View):
+    def get(self, request, encounter_id):
+        get_encounter = requests.get()
     
+def display_observation(request, encounter_id):
+    data = {'Encounter':{}, 'Observation':[]}
+    get_encounter =  requests.get("http://hapi.fhir.org/baseR4/Encounter/" + str(encounter_id), headers={'Content-type': 'application/xml'})
+    if get_encounter.status_code == 200:
+        get_root = ET.fromstring(get_encounter.content.decode('utf-8'))
+        data['Encounter']['id'] = get_root.find('d:id', ns).attrib['value']
+        period = get_root.find('d:period', ns)
+        data['Encounter']['start_date'] = period.find('d:start', ns).attrib['value']
+        
+        get_observation = requests.get("http://hapi.fhir.org/baseR4/Observation?encounter=" + str(encounter_id), headers={'Content-type': 'application/xml'})
+        if get_observation.status_code == 200 and 'entry' in get_observation.content.decode('utf-8'):
+            get_root = ET.fromstring(get_observation.content.decode('utf-8'))
+            observation = []
+            for entry in get_root.findall('d:entry', ns):
+                resource = entry.find('d:resource', ns)
+                observation_resource = resource.find('d:Observation', ns)
+                code = observation_resource.find('d:code', ns)
+                coding = code.find('d:coding', ns)
+                display = coding.find('d:display', ns).attrib['value']
+                quantity = observation_resource.find('d:valueQuantity', ns)
+                value = quantity.find('d:value', ns).attrib['value'] + quantity.find('d:unit', ns).attrib['value'] 
+                data['Observation'].append({'display': display, 'value': value})
+            return render(request, 'myapp/observation.html', {'data': data})
+        else: 
+            return render(request, 'myapp/index.html', {'message': "No data found"})
+    else:
+        return render(request, 'myapp/index.html', {'message': 'Something wrong'})

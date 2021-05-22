@@ -1,0 +1,38 @@
+{%extends 'myapp/base.html'%}
+{%block content%}
+    <form action="" method="POST">
+        <h1>Thông tin thăm khám</h1>
+        <label for="vao-vien">Trực tiếp vào</label>
+        <select name="vao-vien" id="vao-vien">
+            <option value="1" selected>Cấp cứu</option>
+            <option value="2">Khoa khám bệnh</option>
+            <option value="3">Khoa điều trị</option>
+        </select>
+        <label for="ly-do">Lý do vào viện</label>
+        <input type="text-area" id="ly-do" placeholder="Nhập vào lý do vào viện">
+        <label for="khoa">Vào khoa</label>
+        <select name="khoa" id="khoa">
+            <option value="1">Khoa Khám bệnh</option>
+            <option value="2">Khoa Hồi sức cấp cứu</option>
+            <option value="3">Khoa nộp tổng hợp</option>
+            <option value="4">Khoa Nội tim mạch</option>
+            <option value="5">Khoa Nội tiêu hóa</option>
+            <option value="6">Khoa Nội cơ - xương - khớp</option>
+            <option value="7">Khoa Nội thận - tiết niệu</option>
+            <option value="8">Khoa Nội tiết</option>
+            <option value="9">Khoa Dị ứng</option>
+            <option value="10">Khoa Huyết học lâm sàng</option>
+            <option value="11">Khoa Truyền nhiễm</option>
+            <option value="12">Khoa Lao</option>
+            <option value="13">Khoa Da liễu</option>
+            <option value="14">Khoa Thần kinh</option>
+            <option value="15">Khoa Tâm thần</option>
+        </select>
+        <label for="trang-thai">Trạng thái</label>
+        <select name="trang-thai" id="trang-thai">
+            <option value="1">Nhập viện</option>
+            <option value="2">Đang trong thời gian khám bệnh</option>
+            <option value="3">Xuất viện</option>
+        </select>
+    </form>
+{%endblock%}

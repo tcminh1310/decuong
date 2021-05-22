@@ -364,3 +364,10 @@ def display_observation(request, encounter_id):
             return render(request, 'myapp/index.html', {'message': "No data found"})
     else:
         return render(request, 'myapp/index.html', {'message': 'Something wrong'})
+
+def edit(request):
+    pass
+
+class encounter(View):
+    def get(self, request):
+        return render(request, 'myapp/encounter.html')

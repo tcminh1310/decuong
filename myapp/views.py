@@ -79,13 +79,13 @@ class upload(View):
 
             # print(data)                            
             id_system = ""
-            data['Patient']['identifier'] = '12345'
+            # data['Patient']['identifier'] = '12345'
             root = ET.Element('Patient')
             tree = ET.ElementTree(root)
             root.set("xmlns","http://hl7.org/fhir")
             if data['Patient'].values():
                 identifier = ET.SubElement(root, 'identifier')
-                dt.identifier_type(identifier, 'urn:trinhcongminh', '12345', 'usual',{'codes': [{'system': 'http://terminology.hl7.org/CodeSystem/v2-0203', 'code': 'MR'}]})
+                dt.identifier_type(identifier, 'urn:trinhcongminh', data['Patient']['identifier'], 'usual',{'codes': [{'system': 'http://terminology.hl7.org/CodeSystem/v2-0203', 'code': 'MR'}]})
                 if data['Patient'].get('name'):
                     name = ET.SubElement(root, 'name')
                     dt.name_type(name, data['Patient']['name'])
@@ -238,10 +238,10 @@ class upload(View):
                         
                         # if post_req.status_code == 201:
                         #     get_root = ET.fromstring(get_req.content.decode('utf-8'))
-                        #     ns = {'d':"http://hl7.org/fhir"}
+                        #     ns = {'d':"http://hl7.org/fhir"}s
                         #     id_resource = get_root.find('d:id', ns)
                             # encounter_id = id_resource.attrib['value']         
-                return render(request, 'myapp/display.html', {'message': 'Upload successful', 'patient': data['Patient']})
+                return render(request, 'myapp/display.html', {'message': 'Upload successful', 'data': data})
             else: return render(request, 'myapp/index.html',{'message': 'Failed to create resource, please check your file!'})
         else: return render(request, 'myapp/index.html',{'message':'Please upload your file!'})
 
@@ -371,3 +371,5 @@ def edit(request):
 class encounter(View):
     def get(self, request):
         return render(request, 'myapp/encounter.html')
+
+    
